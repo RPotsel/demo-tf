@@ -1,0 +1,31 @@
+# https://www.runatlantis.io/docs/custom-workflows.html
+
+version: 3
+projects:
+- name: demo-dev
+  dir: demo-app
+  workspace: dev
+  workflow: custom
+  terraform_version: 1.3.7
+- name: demo-stage
+  dir: demo-app
+  workspace: stage
+  workflow: custom
+  terraform_version: 1.3.7
+- name: demo-prod
+  dir: demo-app
+  workspace: prod
+  workflow: custom
+  terraform_version: 1.3.7
+workflows:
+  custom:
+    apply:
+      steps:
+      - run: terraform${ATLANTIS_TERRAFORM_VERSION} apply $PLANFILE
+    plan:
+      steps:
+      - run: ln -sf ~/key.json key.json
+      - run: ln -sf ~/backend.cred backend.cred
+      - run: terraform${ATLANTIS_TERRAFORM_VERSION} init -input=false --reconfigure
+      - run: terraform${ATLANTIS_TERRAFORM_VERSION} workspace select $WORKSPACE || terraform${ATLANTIS_TERRAFORM_VERSION} workspace new $WORKSPACE
+      - run: terraform${ATLANTIS_TERRAFORM_VERSION} plan -input=false -refresh -out $PLANFILE -var-file $WORKSPACE.tfvars
