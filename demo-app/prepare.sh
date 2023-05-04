@@ -20,14 +20,26 @@ create_zone(){
 
 	yc dns zone add-records --name demo-zone --record "demo.stage.pinbit.ru. 200 CNAME k8s-stage.pinbit.ru."
 	yc dns zone add-records --name demo-zone --record "demo.pinbit.ru. 200 CNAME k8s-prod.pinbit.ru."
-	yc dns zone add-records --name demo-zone --record "grafana.pinbit.ru. 200 CNAME k8s-stage.pinbit.ru."
+	yc dns zone add-records --name demo-zone --record "grafana.pinbit.ru. 200 CNAME k8s-prod.pinbit.ru."
 	yc dns zone add-records --name demo-zone --record "jenkins.dev.pinbit.ru. 200 CNAME dev.pinbit.ru."
 	yc dns zone add-records --name demo-zone --record "atlantis.dev.pinbit.ru. 200 CNAME dev.pinbit.ru."
 	# yc dns zone list-records --name demo-zone
 }
 
 create_network(){
-	yc vpc network create --name demo-project --labels env=demo-project
+	yc vpc network create \
+    --name demo-project \
+    --folder-id ${YC_FOLDER_ID} \
+    --labels env=demo-project
+ 
+  GW_ID=$(yc vpc gateway create default \
+    --folder-id ${YC_FOLDER_ID} \
+    --format json | jq -r .id)
+
+  yc vpc route-table create nat_rt \
+    --route destination=0.0.0.0/0,gateway-id=${GW_ID} \
+    --network-name demo-project \
+    --folder-id ${YC_FOLDER_ID}
 }
 
 create_bucket(){
@@ -71,6 +83,8 @@ delete_zone(){
 }
 
 delete_network(){
+  yc vpc route-table delete --name nat_rt
+  yc vpc gateway delete --name default
 	yc vpc network delete --name demo-project
 }
 

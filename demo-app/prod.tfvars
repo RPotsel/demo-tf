@@ -8,10 +8,10 @@ vpc = {
   name = "demo-project"
   rt   = "nat_rt"
   subnets = [{
-    name   = "stage-a"
+    name   = "prod-a"
     zone   = "ru-central1-a"
-    cidr4  = ["192.168.1.0/24"]
-    labels = { env = "stage" }
+    cidr4  = ["192.168.2.0/24"]
+    labels = { env = "prod" }
   }]
   labels = { env = "demo-project" }
 }
@@ -19,7 +19,7 @@ vpc = {
 # https://cloud.yandex.ru/docs/application-load-balancer/tools/k8s-ingress-controller/security-groups
 sgs = [
   {
-    name = "k8s-stage-main-sg"
+    name = "k8s-prod-main-sg"
     description = "Security group for the Managed Service for Kubernetes cluster and nodes"
     egress = [{
       description = "The rule allows all outgoing traffic"
@@ -90,41 +90,41 @@ sgs = [
 
 vms = [
   {
-    names     = ["control-stage-01"]
-    subnet    = "stage-a"
+    names     = ["control-prod-01"]
+    subnet    = "prod-a"
     cores     = 2
     fraction  = null
     memory    = 2
     disk_size = 20
-    labels    = { env = "stage", group_stage_1 = "kube_control_plane", group_stage_2="etcd", group_stage_3 = "k8s_cluster" }
+    labels    = { env = "prod", group_prod_1 = "kube_control_plane", group_prod_2="etcd", group_prod_3 = "k8s_cluster" }
     sgs       = ["k8s-main-sg"]
   },
   {
-    names     = ["ingress-stage-01"]
-    subnet    = "stage-a"
+    names     = ["ingress-prod-01"]
+    subnet    = "prod-a"
     cores     = 2
     fraction  = 20
     memory    = 2
     disk_size = 20
-    labels    = { env = "stage", group_stage_1 = "kube_ingress", group_stage_2 = "kube_node", group_stage_3 = "k8s_cluster" }
+    labels    = { env = "prod", group_prod_1 = "kube_ingress", group_prod_2 = "kube_node", group_prod_3 = "k8s_cluster" }
     sgs       = ["k8s-main-sg"]
   },
   {
-    names     = ["worker-stage-01", "worker-stage-02"]
-    subnet    = "stage-a"
+    names     = ["worker-prod-01", "worker-prod-02"]
+    subnet    = "prod-a"
     cores     = 2
     fraction  = 20
     memory    = 4
     disk_size = 20
-    labels    = { env = "stage", group_stage_1 = "kube_node", group_stage_2 = "k8s_cluster" }
+    labels    = { env = "prod", group_prod_1 = "kube_node", group_prod_2 = "k8s_cluster" }
     sgs       = ["k8s-main-sg"]
   },
 ]
 
 lb = [
   {
-    name = "k8s-stage"
-    instances = ["ingress-stage-01"]
+    name = "k8s-prod"
+    instances = ["ingress-prod-01"]
     port = 80
   },
 ]

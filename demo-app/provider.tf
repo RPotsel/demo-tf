@@ -8,7 +8,7 @@ terraform {
   }
   backend "s3" {
     endpoint                = "storage.yandexcloud.net"
-    bucket                  = "degree-project"
+    bucket                  = "demo-app-tf-state"
     region                  = "ru-central1"
     key                     = "terraform.tfstate"
     shared_credentials_file = "backend.cred"

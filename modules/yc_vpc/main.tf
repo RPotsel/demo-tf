@@ -1,6 +1,10 @@
 data "yandex_vpc_network" "this" {
-  name        = var.virtual_private_cloud.name
-  folder_id   = var.folder_id
+  name = var.virtual_private_cloud.name
+}
+
+data "yandex_vpc_route_table" "this" {
+  count = var.virtual_private_cloud.rt != null ? 1 : 0
+  name  = var.virtual_private_cloud.rt
 }
 
 resource "yandex_vpc_subnet" "this" {
@@ -12,6 +16,7 @@ resource "yandex_vpc_subnet" "this" {
   name           = lookup(each.value, "name", null)
   zone           = lookup(each.value, "zone")
   network_id     = data.yandex_vpc_network.this.id
+  route_table_id = var.virtual_private_cloud.rt != null ? data.yandex_vpc_route_table.this[0].id : null
 }
 
 resource "yandex_vpc_security_group" "this" {

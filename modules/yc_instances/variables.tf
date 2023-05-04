@@ -2,7 +2,7 @@ variable "instances" {
   type = object({
     names     = list(string)
     subnet    = string
-    nat       = bool
+    nat       = optional(bool)
     cores     = number
     fraction  = number
     memory    = number

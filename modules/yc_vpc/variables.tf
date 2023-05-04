@@ -6,6 +6,7 @@ variable "folder_id" {
 variable "virtual_private_cloud" {
   type = object({
     name = string
+    rt   = optional(string)
     subnets = list(object({
       name    = string
       zone    = string

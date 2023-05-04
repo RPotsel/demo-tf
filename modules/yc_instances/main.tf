@@ -47,7 +47,7 @@ resource "yandex_compute_instance" "this" {
 }
 
 resource "yandex_dns_recordset" "this" {
-  for_each = var.dns_zone != "" ? {for k,v in yandex_compute_instance.this : k => v if v.network_interface[0].nat} : {}
+  for_each =  var.dns_zone !="" && var.instances.nat != null ? {for k,v in yandex_compute_instance.this : k => v if v.network_interface[0].nat} : {}
   zone_id = data.yandex_dns_zone.this[0].id
   name    = "${each.value.name}.${data.yandex_dns_zone.this[0].zone}"
   type    = "A"
