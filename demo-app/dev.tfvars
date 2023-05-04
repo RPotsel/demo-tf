@@ -46,7 +46,7 @@ vms = [
     nat       = true
     cores     = 2
     fraction  = 20
-    memory    = 4
+    memory    = 6
     disk_size = 20
     labels    = { env = "dev", group_dev_1 = "jenkins", group_dev_2 = "nginx", group_dev_3 = "docker", group_dev_4 = "atlantis", group_stage_1 = "jenkins", group_prod_1 = "jenkins" }
     sgs       = ["dev-sg"]
